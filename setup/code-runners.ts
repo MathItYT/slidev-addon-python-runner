@@ -93,8 +93,7 @@ export default defineCodeRunnersSetup(() => {
             html: [
               `<div class="text-red">${matchNotFoundError[0]}</div>`,
               `<div class="text-blue">Tip: This may because of this package is not a <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html">Pyodide builtin package</a>.`,
-              "<br>You may need to install it by running the following code:",
-              `<pre>&nbsp;&nbsp;import micropip;<br>&nbsp;&nbsp;micropip.install('${matchNotFoundError[1]}')</pre>`,
+              "<br>You may need to install it by adding the package name to the `python.installs` array in your headmatter.",
               `</div>`
             ].join('')
           })
