@@ -22,7 +22,7 @@ addons:
 # Optional configuration for this runner
 python:
   # Install packages from PyPI. Default: []
-  installs: ["flask"]
+  installs: ["cowsay"]
 
   # Code executed to set up the environment. Default: ""
   prelude: |
