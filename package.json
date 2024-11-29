@@ -1,5 +1,6 @@
 {
   "name": "slidev-addon-python-runner",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "build": "slidev build",
@@ -11,6 +12,11 @@
     "type": "git",
     "url": "https://github.com/KermanX/slidev-addon-python-runner.git"
   },
+  "keywords": [
+    "slidev-addon",
+    "python",
+    "pyodide"
+  ],
   "files": [
     "assets",
     "setup",
