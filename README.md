@@ -2,7 +2,7 @@
 
 Python runner for the [Monaco Runner feature](https://sli.dev/features/monaco-run) in [Slidev](https://sli.dev/). Code executed in browser using [Pyodide](https://pyodide.org/).
 
-![Demo](assets/image.png)
+![Demo](assets/demo.png)
 
 ## Usage
 
