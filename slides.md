@@ -24,7 +24,7 @@ python:
 
 # Python Runner for Slidev
 
-```python {monaco-run}
+```py {monaco-run}
 from termcolor import colored
 import pandas as pd
 import numpy as np

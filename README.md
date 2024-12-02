@@ -45,7 +45,7 @@ python:
 To add an interactive Python code runner, use the `monaco-run` directive:
 
 ````md
-```python {monaco-run}
+```py {monaco-run}
 from termcolor import colored
 
 print(colored("Hello, Slidev!", "blue"))

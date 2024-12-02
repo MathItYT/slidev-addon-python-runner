@@ -6,7 +6,6 @@ import { useNav } from '@slidev/client'
 let pyodideCache: PyodideInterface | null = null
 let pyodideOptionCache = "{}"
 async function setupPyodide(options = {}, code) {
-
   const {
     installs = [],
     prelude = "",
@@ -61,55 +60,57 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 export default defineCodeRunnersSetup(() => {
   const { slides } = useNav()
-  return {
-    async python(code) {
-      // @ts-expect-error
-      const pyodide = await setupPyodide(slides.value[0].meta.slide.frontmatter?.python, code)
-      const texts = ref([''])
-      const extras = ref<CodeRunnerOutput[]>([])
-      const decoder = new TextDecoder('utf-8');
-      function write(buffer: Uint8Array) {
-        const text = decoder.decode(buffer)
-        for (const line of text.split('\n')) {
-          texts.value[texts.value.length - 1] += line
-          texts.value.push('')
-        }
-        return buffer.length
+  async function run(code: string) {
+    // @ts-expect-error
+    const pyodide = await setupPyodide(slides.value[0].meta.slide.frontmatter?.python, code)
+    const texts = ref([''])
+    const extras = ref<CodeRunnerOutput[]>([])
+    const decoder = new TextDecoder('utf-8');
+    function write(buffer: Uint8Array) {
+      const text = decoder.decode(buffer)
+      for (const line of text.split('\n')) {
+        texts.value[texts.value.length - 1] += line
+        texts.value.push('')
       }
-      pyodide.setStdout({
-        write: write,
-        isatty: true,
-      })
-      pyodide.setStderr({
-        write: write,
-        isatty: true,
-      })
-      pyodide.runPythonAsync(code).catch(err => {
-        console.error(err)
-        const str = err.toString()
-        const matchNotFoundError = str.match(/ModuleNotFoundError: No module named '(.*)'/)
-        if (matchNotFoundError) {
+      return buffer.length
+    }
+    pyodide.setStdout({
+      write: write,
+      isatty: true,
+    })
+    pyodide.setStderr({
+      write: write,
+      isatty: true,
+    })
+    pyodide.runPythonAsync(code).catch(err => {
+      console.error(err)
+      const str = err.toString()
+      const matchNotFoundError = str.match(/ModuleNotFoundError: No module named '(.*)'/)
+      if (matchNotFoundError) {
+        extras.value.push({
+          html: [
+            `<div class="text-red">${matchNotFoundError[0]}</div>`,
+            `<div class="text-blue">Tip: This may because of this package is not a <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html">Pyodide builtin package</a>.`,
+            "<br>You may need to install it by adding the package name to the `python.installs` array in your headmatter.",
+            `</div>`
+          ].join('')
+        })
+      } else {
+        for (const line of str.split('\n')) {
           extras.value.push({
-            html: [
-              `<div class="text-red">${matchNotFoundError[0]}</div>`,
-              `<div class="text-blue">Tip: This may because of this package is not a <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html">Pyodide builtin package</a>.`,
-              "<br>You may need to install it by adding the package name to the `python.installs` array in your headmatter.",
-              `</div>`
-            ].join('')
+            text: line,
+            class: 'text-red'
           })
-        } else {
-          for (const line of str.split('\n')) {
-            extras.value.push({
-              text: line,
-              class: 'text-red'
-            })
-          }
         }
-      });
-      return () => [
-        ...texts.value.map(text => ({ text, highlightLang: 'ansi' })),
-        ...extras.value,
-      ]
-    },
+      }
+    });
+    return () => [
+      ...texts.value.map(text => ({ text, highlightLang: 'ansi' })),
+      ...extras.value,
+    ]
+  }
+  return {
+    python: run,
+    py: run,
   }
 })
